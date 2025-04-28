@@ -1,0 +1,61 @@
+<!-- Form Section -->
+<div class="form-container">
+  <form id="ad-copy-form">
+    <label>Product Title:</label>
+    <input type="text" name="product_title" required />
+
+    <label>Product Description:</label>
+    <textarea name="product_description" required></textarea>
+
+    <label>Target Audience:</label>
+    <input type="text" name="target_audience" required />
+
+    <label>Platform:</label>
+    <select name="platform" required>
+      <option value="Etsy">Etsy</option>
+      <option value="eBay">eBay</option>
+    </select>
+
+    <button type="submit">Generate Ad Copy</button>
+  </form>
+
+  <div id="result" style="margin-top:20px; padding:10px; border:1px solid #ccc;">
+    <em>Your ad copy will appear here...</em>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+const form = document.getElementById('ad-copy-form');
+const resultDiv = document.getElementById('result');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  resultDiv.innerHTML = '<em>Generating ad copy...</em>';
+
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch('https://your-app-name.onrender.com/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        product_title: formData.get('product_title'),
+        product_description: formData.get('product_description'),
+        target_audience: formData.get('target_audience'),
+        platform: formData.get('platform')
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.ad_copy) {
+      resultDiv.innerHTML = `<strong>Generated Ad Copy:</strong><br><br>${data.ad_copy}`;
+    } else {
+      resultDiv.innerHTML = `<span style="color:red;">Error: ${data.error || 'Something went wrong.'}</span>`;
+    }
+  } catch (error) {
+    resultDiv.innerHTML = `<span style="color:red;">Error connecting to server. Please try again.</span>`;
+  }
+});
+</script>
